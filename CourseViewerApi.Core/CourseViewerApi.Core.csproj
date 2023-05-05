@@ -1,9 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+  </ItemGroup>
+
+    <ItemGroup>
+		<ProjectReference Include="..\CourseViewerApi.Common\CourseViewerApi.Common.csproj" />
+		<ProjectReference Include="..\CourseViewerApi.DataAccess\CourseViewerApi.DataAccess.csproj" />
+    </ItemGroup>
 
 </Project>

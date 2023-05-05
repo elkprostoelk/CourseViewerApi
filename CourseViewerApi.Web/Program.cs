@@ -1,3 +1,4 @@
+using CourseViewerApi.Web.Extensions;
 using Microsoft.AspNetCore.Diagnostics;
 using Serilog;
 
@@ -7,6 +8,9 @@ builder.Host.UseSerilog((hostBuiderContext, loggerConfig) =>
     loggerConfig.ReadFrom.Configuration(hostBuiderContext.Configuration));
 
 // Add services to the container.
+builder.Services.AddServices(builder.Configuration);
+builder.Services.ConfigureJwt(builder.Configuration);
+builder.Services.ConfigureSwagger();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

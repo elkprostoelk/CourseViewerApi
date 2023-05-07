@@ -1,8 +1,8 @@
-﻿using CourseViewerApi.Common.DTO;
+﻿using AutoMapper;
+using CourseViewerApi.Common.DTO;
 using CourseViewerApi.Core.Interfaces;
 using CourseViewerApi.DataAccess.Entities;
 using CourseViewerApi.DataAccess.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -17,15 +17,18 @@ namespace CourseViewerApi.Core.Services
         private readonly IUserRepository _repository;
         private readonly IConfiguration _configuration;
         private readonly ILogger<UserService> _logger;
+        private readonly IMapper _mapper;
 
         public UserService(
             IUserRepository repository,
             IConfiguration configuration,
-            ILogger<UserService> logger)
+            ILogger<UserService> logger,
+            IMapper mapper)
         {
             _repository = repository;
             _configuration = configuration;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResult<UserTokenDto>> LoginUserAsync(LoginDto loginDto)
@@ -61,6 +64,41 @@ namespace CourseViewerApi.Core.Services
                 result.Errors.Add("Failed to log in!");
             }
             
+            return result;
+        }
+
+        public async Task<ServiceResult<UserTokenDto>> RegisterUserAsync(RegisterDto dto)
+        {
+            var result = new ServiceResult<UserTokenDto>();
+
+            try
+            {
+                var user = new User
+                {
+                    Email = dto.Email,
+                    PhoneNumber = dto.PhoneNumber,
+                    Type = dto.Type,
+                    UserName = dto.Email,
+                    Name = dto.Name
+                };
+                bool added = await _repository.AddAsync(user, dto.Password);
+                if (added)
+                {
+                    result.ResultValue = new UserTokenDto { Jwt = await GenerateTokenAsync(user) };
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Errors.Add("Failed to register user!");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "An error occured while executing the service");
+                result.Success = false;
+                result.Errors.Add("Failed to register user!");
+            }
+
             return result;
         }
 

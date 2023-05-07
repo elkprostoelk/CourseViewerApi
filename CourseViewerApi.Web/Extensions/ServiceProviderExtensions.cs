@@ -4,6 +4,7 @@ using CourseViewerApi.DataAccess;
 using CourseViewerApi.DataAccess.Entities;
 using CourseViewerApi.DataAccess.Interfaces;
 using CourseViewerApi.DataAccess.Repositories;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,11 +28,13 @@ namespace CourseViewerApi.Web.Extensions
             services.AddIdentity<User, IdentityRole>(opts =>
             {
                 opts.Password.RequiredLength = 8;
+                opts.Password.RequireNonAlphanumeric = false;
                 opts.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<CourseViewerDbContext>()
                 .AddDefaultTokenProviders();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
             services.AddRouting(options => options.LowercaseUrls = true);
         }
 

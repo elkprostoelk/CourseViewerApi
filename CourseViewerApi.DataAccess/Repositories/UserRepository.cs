@@ -18,6 +18,24 @@ namespace CourseViewerApi.DataAccess.Repositories
             _userManager = userManager;
         }
 
+        public async Task<bool> AddAsync(User user, string password)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            IdentityResult result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                IdentityResult roleResult = await _userManager.AddToRoleAsync(user, user.Type.ToString().ToLower());
+                if (roleResult.Succeeded)
+                {
+                    await transaction.CommitAsync();
+                    return true;
+                }
+            }
+
+            await transaction.RollbackAsync();
+            return false;
+        }
+
         public async Task<bool> ExistsAsync(string email, CancellationToken token) =>
             await _userManager.Users.AnyAsync(u => u.Email == email, token);
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CourseViewerApi.Common.DTO;
 
 namespace CourseViewerApi.Web
 {
@@ -6,7 +7,7 @@ namespace CourseViewerApi.Web
     {
         public AutoMapperProfile()
         {
-
+            
         }
     }
 }

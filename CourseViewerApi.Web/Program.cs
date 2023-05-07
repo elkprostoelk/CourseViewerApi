@@ -4,10 +4,14 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseSerilog((hostBuiderContext, loggerConfig) =>
-    loggerConfig.ReadFrom.Configuration(hostBuiderContext.Configuration));
+var configuredLogger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+builder.Host.UseSerilog(configuredLogger);
 
 // Add services to the container.
+
 builder.Services.AddServices(builder.Configuration);
 builder.Services.ConfigureJwt(builder.Configuration);
 builder.Services.ConfigureSwagger();
@@ -36,12 +40,17 @@ app.UseExceptionHandler(appBuilder => appBuilder.Run(async context =>
     await context.Response.WriteAsJsonAsync(new { error = "Internal Server Error"});
 }));
 
-app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+
+app.UseCors(x => x.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+await app.SeedDatabaseAsync(app.Configuration);
 
 await app.RunAsync();

@@ -38,7 +38,7 @@ namespace CourseViewerApi.Web.Controllers
             }
 
             var validationResult = await _validator.ValidateAsync(dto);
-            if (validationResult.IsValid)
+            if (!validationResult.IsValid)
             {
                 validationResult.AddToModelState(ModelState);
                 return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));

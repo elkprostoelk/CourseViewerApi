@@ -25,7 +25,7 @@ namespace CourseViewerApi.Web.Controllers
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             var validationResult = await _validator.ValidateAsync(loginDto);
-            if (validationResult.IsValid)
+            if (!validationResult.IsValid)
             {
                 validationResult.AddToModelState(ModelState);
                 return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));

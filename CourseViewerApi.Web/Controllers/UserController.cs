@@ -45,9 +45,13 @@ namespace CourseViewerApi.Web.Controllers
             }
 
             ServiceResult<UserTokenDto> result = await _service.RegisterUserAsync(dto);
-            return result.Success
-                ? StatusCode(201, result.ResultValue)
-                : BadRequest(result.Errors);
+            if (result.Success)
+            {
+                return User.Identity.IsAuthenticated
+                    ? StatusCode(201, result.ResultValue)
+                    : StatusCode(201);
+            }
+            return BadRequest(result.Errors);
         }
     }
 }
